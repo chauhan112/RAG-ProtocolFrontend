@@ -1,0 +1,12 @@
+.card {
+    padding: 2em;
+}
+
+.read-the-docs {
+    color: #888;
+}
+
+.linear-gradient {
+    box-shadow: 15px 10px 10px rgba(3, 3, 3, 0.15);
+    background: linear-gradient(to bottom, #b6fffa 0%, #80b3ff 100%);
+}
