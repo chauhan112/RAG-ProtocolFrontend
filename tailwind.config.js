@@ -8,6 +8,7 @@ export default {
                 secondary: "#d32b2b",
                 dark: "#212b35",
                 grey: "#f4f5f7",
+                teal: "#00b4b4",
             },
         },
     },
