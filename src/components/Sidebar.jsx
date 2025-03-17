@@ -1,5 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { GForm } from "./Components";
+import {
+    fetchCollections,
+    addCollection,
+    updateCollection,
+    deleteCollection,
+} from "../tools/api";
 
 function Sidebar({ selectedCollection, onSelectCollection }) {
     const [collections, setCollections] = useState([]);
@@ -14,36 +20,54 @@ function Sidebar({ selectedCollection, onSelectCollection }) {
         },
     ];
     useEffect(() => {
-        setCollections([
-            { id: 1, title: "Research Papers" },
-            { id: 2, title: "Books" },
-        ]);
+        // API call: fetchCollections()
+        fetchCollections().then((data) =>
+            setCollections(data.map((c) => ({ id: c, title: c })))
+        );
     }, []);
 
     const handleAddCollection = (collection) => {
         // API call: createCollection({ title })
-        const newCollection = { ...collection, id: Date.now() };
-        setCollections([...collections, newCollection]);
-        setShowForm(false);
+
+        addCollection(collection.title)
+            .then(() => {
+                const newCollection = { ...collection, id: Date.now() };
+                setCollections([...collections, newCollection]);
+                setShowForm(false);
+            })
+            .catch((error) => {
+                console.error("Error adding collection:", error);
+            });
     };
 
     const handleEditCollection = (collection) => {
         // API call: updateCollection(collection.id, { title })
-        if (selectedCollection?.id === collection.id) {
-            onSelectCollection(collection);
-        }
-        setCollections(
-            collections.map((c) => (c.id === collection.id ? collection : c))
-        );
-        setEditCollection(null);
+        console.log(collection);
+        updateCollection(collection.id, collection.title).then(() => {
+            setEditCollection(null);
+            fetchCollections().then((data) => {
+                setCollections(data.map((c) => ({ id: c, title: c })));
+                // data.map((c) => {
+                //     if (c === collection.title) {
+                //         onSelectCollection({ id: c, title: c });
+                //     }
+                // });
+            });
+            onSelectCollection(null);
+            // if (selectedCollection?.id === collection.id) {
+            //     onSelectCollection(collection);
+            // }
+        });
     };
 
     const handleDeleteCollection = (id) => {
         // API call: deleteCollection(id)
-        if (selectedCollection?.id === id) {
-            onSelectCollection(null);
-        }
-        setCollections(collections.filter((c) => c.id !== id));
+        deleteCollection(id).then(() => {
+            if (selectedCollection?.id === id) {
+                onSelectCollection(null);
+            }
+            setCollections(collections.filter((c) => c.id !== id));
+        });
     };
 
     return (

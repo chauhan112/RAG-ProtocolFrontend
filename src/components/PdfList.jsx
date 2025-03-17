@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { GForm } from "./Components";
-
+import { readPdfs } from "../tools/api";
 export const Header = ({ title, onUpload }) => {
     return (
         <div className="flex justify-between">
@@ -27,10 +27,9 @@ function PdfList({ collection }) {
         },
     ];
     useEffect(() => {
-        setPdfs([
-            { id: 1, name: "Paper1.pdf" },
-            { id: 2, name: "Paper2.pdf" },
-        ]);
+        readPdfs(collection.id).then((data) => {
+            setPdfs(data.data.map((c) => ({ id: c, name: c })));
+        });
     }, [collection.id]);
 
     const handleUploadPdf = (info) => {

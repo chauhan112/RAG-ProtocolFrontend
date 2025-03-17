@@ -1,18 +1,17 @@
 import React, { useState, useEffect } from "react";
-// import Sidebar from "./components/Sidebar";
+import Sidebar from "./components/Sidebar";
 import PdfList from "./components/PdfList";
 import QuestionForm from "./components/QuestionForm";
 import AnswerDisplay from "./components/AnswerDisplay";
-import { Sidebar } from "./components/Components";
+// import { Sidebar } from "./components/Components";
 import { CITTools } from "./tools/Helper";
-const API_BASE_URL = "http://localhost:8000";
-// import { ConfirmationModal } from "./components/Components";
 
 export const MainComponent = () => {
     const [selectedCollection, setSelectedCollection] = useState(null);
     const [answer, setAnswer] = useState(null);
     const [hideNav, setHideNav] = useState(false);
     const [rhideNav, setRHideNav] = useState(false);
+
     return (
         <div className="relative">
             <div className="flex h-screen bg-gray-100 relative">
@@ -45,7 +44,7 @@ export const MainComponent = () => {
                         </p>
                     )}
                 </div>
-                {!rhideNav && (
+                {/* {!rhideNav && (
                     <Sidebar
                         onSelectCollection={setSelectedCollection}
                         selectedCollection={selectedCollection}
@@ -56,7 +55,7 @@ export const MainComponent = () => {
                     onClick={() => setRHideNav(!rhideNav)}
                 >
                     {rhideNav ? "<<" : ">>"}
-                </div>
+                </div> */}
             </div>
         </div>
     );
@@ -82,7 +81,7 @@ export const Test = () => {
 };
 
 function App() {
-    return <Test />;
+    return <MainComponent />;
 }
 
 export default App;
