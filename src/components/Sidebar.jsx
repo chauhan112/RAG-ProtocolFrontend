@@ -31,7 +31,7 @@ function Sidebar({ selectedCollection, onSelectCollection }) {
 
         addCollection(collection.title)
             .then(() => {
-                const newCollection = { ...collection, id: Date.now() };
+                const newCollection = { ...collection, id: collection.title };
                 setCollections([...collections, newCollection]);
                 setShowForm(false);
             })

@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { GForm } from "./Components";
-import { readPdfs, uploadPdf } from "../tools/api";
+import { readPdfs, uploadPdf, deletePdf } from "../tools/api";
+import { CITTools } from "../tools/Helper";
+import { toast } from "react-toastify";
 export const Header = ({ title, onUpload }) => {
     return (
         <div className="flex justify-between">
@@ -14,37 +16,88 @@ export const Header = ({ title, onUpload }) => {
         </div>
     );
 };
+
 function PdfList({ collection }) {
     const [pdfs, setPdfs] = useState([]);
     const [showForm, setShowForm] = useState(false);
+    const inpStruc = {
+        key: "name",
+        type: "file",
+        accept: ".pdf",
+        label: "Upload PDF",
+
+        getter: (e) => e.target.files[0],
+    };
+
+    let originalcss = "bg-green-500 text-white px-4 py-2 rounded";
+    const updateSaveProps = (props) => {
+        formRef.current.setSt(
+            CITTools.updateObject(formRef.current.st, {
+                btns: {
+                    children: {
+                        0: {
+                            ...props,
+                        },
+                    },
+                },
+            })
+        );
+    };
     const formStruc = [
         {
-            key: "name",
-            type: "file",
-            accept: ".pdf",
-            label: "Upload PDF",
-            getter: (e) => e.target.files[0],
+            ...inpStruc,
+            onChange: (e) => {
+                formRef.current.onChangeForInput(e, inpStruc);
+                updateSaveProps({
+                    disabled: false,
+                    className: originalcss,
+                });
+            },
         },
     ];
+
     useEffect(() => {
         readPdfs(collection.id).then((data) => {
             setPdfs(data.data.map((c) => ({ id: c, name: c })));
         });
     }, [collection.id]);
-
+    const formRef = React.createRef();
     const handleUploadPdf = (info) => {
         let file = info.name;
-
-        uploadPdf(file, collection.id).then((data) => {
-            const newPdf = { id: Date.now(), name: file.name };
-            setPdfs([...pdfs, newPdf]);
-            setShowForm(false);
+        console.log(formRef);
+        updateSaveProps({
+            disabled: true,
+            label: "uploading...",
+            className:
+                "bg-green-500 text-white px-4 py-2 rounded cursor-not-allowed",
         });
+        uploadPdf(file, collection.id)
+            .then((data) => {
+                const newPdf = { id: Date.now(), name: file.name };
+                setPdfs([...pdfs, newPdf]);
+                setShowForm(false);
+                updateSaveProps({
+                    disabled: true,
+                    label: "uploading...",
+                    className: "cursor-not-allowed",
+                });
+            })
+            .catch((error) => {
+                console.error("Error uploading PDF:", error);
+                toast.error("Error uploading PDF", { autoClose: 3000 });
+                updateSaveProps({
+                    disabled: false,
+                    label: "Retry",
+                    className: "bg-red-500 text-white px-4 py-2 rounded",
+                });
+            });
     };
 
     const handleDeletePdf = (id) => {
         // API call: deletePdf(collectionId, id)
-        setPdfs(pdfs.filter((p) => p.id !== id));
+        deletePdf(id, collection.id).then(() => {
+            setPdfs(pdfs.filter((p) => p.id !== id));
+        });
     };
 
     return (
@@ -59,6 +112,18 @@ function PdfList({ collection }) {
                     formStruc={formStruc}
                     onSubmit={handleUploadPdf}
                     onCancel={() => setShowForm(false)}
+                    ref={formRef}
+                    {...{
+                        btns: {
+                            children: {
+                                0: {
+                                    disabled: true,
+                                    className:
+                                        "bg-gray-200 text-white px-4 py-2 rounded cursor-not-allowed",
+                                },
+                            },
+                        },
+                    }}
                 />
             )}
 

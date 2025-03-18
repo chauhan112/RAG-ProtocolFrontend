@@ -38,21 +38,18 @@ export const readPdfs = async (collectionName) => {
 export const uploadPdf = async (file, collectionName) => {
     const formData = new FormData();
     formData.append("file", file);
+    formData.append("pdf_name", file.name);
 
     return await axios.post(
         `${API_BASE_URL}/collections/${collectionName}/pdfs/?pdf_name=${file.name}`,
         formData,
         {
-            headers: {
-                "Content-Type": "multipart/form-data",
-            },
+            headers: { "Content-Type": "multipart/form-data" },
         }
     );
-    // return await axios.post(
-    //     `${API_BASE_URL}/collections/${collectionName}/pdfs/`,
-    //     formData,
-    //     {
-    //         headers: { "Content-Type": "multipart/form-data" },
-    //     }
-    // );
+};
+export const deletePdf = async (filename, collectionName) => {
+    return await axios.delete(
+        `${API_BASE_URL}/collections/${collectionName}/pdfs/${filename}`
+    );
 };
