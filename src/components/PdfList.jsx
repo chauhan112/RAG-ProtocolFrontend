@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { GForm } from "./Components";
-import { readPdfs } from "../tools/api";
+import { readPdfs, uploadPdf } from "../tools/api";
 export const Header = ({ title, onUpload }) => {
     return (
         <div className="flex justify-between">
@@ -33,14 +33,13 @@ function PdfList({ collection }) {
     }, [collection.id]);
 
     const handleUploadPdf = (info) => {
-        const formData = new FormData();
         let file = info.name;
-        formData.append("pdf", file);
-        // fetch(`/api/collections/${collectionId}/pdfs`, { method: "POST", body: formData });
 
-        const newPdf = { id: Date.now(), name: file.name };
-        setPdfs([...pdfs, newPdf]);
-        setShowForm(false);
+        uploadPdf(file, collection.id).then((data) => {
+            const newPdf = { id: Date.now(), name: file.name };
+            setPdfs([...pdfs, newPdf]);
+            setShowForm(false);
+        });
     };
 
     const handleDeletePdf = (id) => {
